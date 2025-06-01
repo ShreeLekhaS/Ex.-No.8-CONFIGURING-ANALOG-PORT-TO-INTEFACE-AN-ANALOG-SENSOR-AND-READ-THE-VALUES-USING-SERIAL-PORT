@@ -1,8 +1,6 @@
-**** 
 
-
-# Ex. No. :8 CONFIGURING ANALOG PORT TO INTEFACE AN ANALOG SENSOR AND READ THE VALUES USING SERIAL PORT
-
+### Ex. No. :8 CONFIGURING ANALOG PORT TO INTEFACE AN ANALOG SENSOR AND READ THE VALUES USING SERIAL PORT
+## Date: 
 ###  
 
 ## Aim: 
@@ -150,105 +148,67 @@ This module also includes a potentiometer that will fix the threshold value, & t
 
 
 ##  Program 
+
+
 ```
 #include "main.h"
-void SystemClock_Config(void);
-static void MX_GPIO_Init(void);
-int main(void)
-{
-   HAL_Init();
-   SystemClock_Config();
-   MX_GPIO_Init();
-  while (1)
-  }
+#include"stdio.h"
+uint32_t adcvalue;
+#if defined (_ICCARM) || defined (_ARMCC_VERSION)
+#define PUTCHAR_PROTOTYPE int fputc(int ch, FILE *f)
+#elif defined(_GNUC_)
+   
+#define PUTCHAR_PROTOTYPE int __io_putchar(int ch)
+#endif  
 
-void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
+while(1)
 {
-	if(GPIO_Pin == GPIO_PIN_9)
-	{
-		HAL_GPIO_TogglePin(GPIOA,GPIO_PIN_11);
-	}
-}
-void SystemClock_Config(void)
-{
-  RCC_OscInitTypeDef RCC_OscInitStruct = {0};
-  RCC_ClkInitTypeDef RCC_ClkInitStruct = {0};
-  __HAL_RCC_PWR_CLK_ENABLE();
-  __HAL_PWR_VOLTAGESCALING_CONFIG(PWR_REGULATOR_VOLTAGE_SCALE2);
-  RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSI;
-  RCC_OscInitStruct.HSIState = RCC_HSI_ON;
-  RCC_OscInitStruct.HSICalibrationValue = RCC_HSICALIBRATION_DEFAULT;
-  RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
-  RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSI;
-  RCC_OscInitStruct.PLL.PLLM = 8;
-  RCC_OscInitStruct.PLL.PLLN = 84;
-  RCC_OscInitStruct.PLL.PLLP = RCC_PLLP_DIV2;
-  RCC_OscInitStruct.PLL.PLLQ = 4;
-  if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK)
-  {
-    Error_Handler();
-  }
-  RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK|RCC_CLOCKTYPE_SYSCLK
-                              |RCC_CLOCKTYPE_PCLK1|RCC_CLOCKTYPE_PCLK2;
-  RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;
-  RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
-  RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV2;
-  RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV1;
 
-  if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_2) != HAL_OK)
-  {
-    Error_Handler();
-  }
-}
-static void MX_GPIO_Init(void)
-{
-  GPIO_InitTypeDef GPIO_InitStruct = {0};
-  __HAL_RCC_GPIOH_CLK_ENABLE();
-  __HAL_RCC_GPIOA_CLK_ENABLE();
-  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_11, GPIO_PIN_RESET);
-  GPIO_InitStruct.Pin = GPIO_PIN_9;
-  GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING;
-  GPIO_InitStruct.Pull = GPIO_PULLUP;
-  HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
-  GPIO_InitStruct.Pin = GPIO_PIN_11;
-  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
-  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-  HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
-  HAL_NVIC_SetPriority(EXTI9_5_IRQn, 0, 0);
-  HAL_NVIC_EnableIRQ(EXTI9_5_IRQn);
+	HAL_ADC_Start(&hadc1);
+			HAL_ADC_PollForConversion(&hadc1,100);
+			adcvalue = HAL_ADC_GetValue(&hadc1);
+			HAL_ADC_Stop(&hadc1);
+			HAL_Delay(500);
+			printf("ADC VALUE:%ld\n",adcvalue);
+
 }
 
-void Error_Handler(void)
+PUTCHAR_PROTOTYPE
 {
-    __disable_irq();
-  while (1)
-  }
 
-#ifdef  USE_FULL_ASSERT
-void assert_failed(uint8_t *file, uint32_t line)
-{
+  HAL_UART_Transmit(&huart1, (uint8_t *)&ch, 1, 0xFFFF);
+
+  return ch;
 }
-#endif
-```
+
+ ```
 
  
+## Output  :
+### Board Settings and its connections
+![280911406-a972226e-ba10-4d6d-9408-443528ea8bc0](https://github.com/Senthamil1412/Ex.-No.8-CONFIGURING-ANALOG-PORT-TO-INTEFACE-AN-ANALOG-SENSOR-AND-READ-THE-VALUES-USING-SERIAL-PORT/assets/119120228/699184c4-a528-48fc-aaac-6a066fa5536a)
+![280911425-89e23dc4-f918-435e-a72f-c04afb2613ad](https://github.com/Senthamil1412/Ex.-No.8-CONFIGURING-ANALOG-PORT-TO-INTEFACE-AN-ANALOG-SENSOR-AND-READ-THE-VALUES-USING-SERIAL-PORT/assets/119120228/19193b23-cce5-4056-b6b3-eb9fd6ef328f)
+![280911434-ebcdef30-a6ab-4b28-af3b-0dbf123aa832](https://github.com/Senthamil1412/Ex.-No.8-CONFIGURING-ANALOG-PORT-TO-INTEFACE-AN-ANALOG-SENSOR-AND-READ-THE-VALUES-USING-SERIAL-PORT/assets/119120228/92e9a848-9282-43f9-a1f1-8bf007a2a0e5)
+
+### Normal ADC Value :
+![280911500-d1520d93-f9a1-478d-bca5-e619eb670642](https://github.com/Senthamil1412/Ex.-No.8-CONFIGURING-ANALOG-PORT-TO-INTEFACE-AN-ANALOG-SENSOR-AND-READ-THE-VALUES-USING-SERIAL-PORT/assets/119120228/6b96d8d5-d757-49ac-9b9c-1da034c52492)
+
+### After Light Dipping of soil-moisture-sensor-device in water :
+![280911571-dad265e2-3604-4432-bb95-faef12e509bb](https://github.com/Senthamil1412/Ex.-No.8-CONFIGURING-ANALOG-PORT-TO-INTEFACE-AN-ANALOG-SENSOR-AND-READ-THE-VALUES-USING-SERIAL-PORT/assets/119120228/401b7e20-792e-45ef-8e62-aae775be47a3)
+![280911594-019163ce-06fa-46a9-bc1c-c2097ee3ea55](https://github.com/Senthamil1412/Ex.-No.8-CONFIGURING-ANALOG-PORT-TO-INTEFACE-AN-ANALOG-SENSOR-AND-READ-THE-VALUES-USING-SERIAL-PORT/assets/119120228/c32f0221-d073-4f86-95a2-ce1e6e0b5ac5)
 
 
- 
-## Output screen shots of proteus :
-![image](https://github.com/user-attachments/assets/63489749-7c15-4501-96fa-fe8cb578ce5d)
+### After Deep Dipping of soil-moisture-sensor-device in water :
+![280911637-b44eabeb-3aef-4868-85ef-56bf5b71661d](https://github.com/Senthamil1412/Ex.-No.8-CONFIGURING-ANALOG-PORT-TO-INTEFACE-AN-ANALOG-SENSOR-AND-READ-THE-VALUES-USING-SERIAL-PORT/assets/119120228/a29f8b1c-3e1c-45fe-862c-201f730d337e)
 
-![image](https://github.com/user-attachments/assets/6384693b-69f7-4b4f-aa25-e7700da38b11)
 
-## CIRCUIT DIAGRAM (EXPORT THE GRAPHICS TO PDF AND ADD THE SCREEN SHOT HERE):
-![WhatsApp Image 2024-10-16 at 10 52 32_c875fa15](https://github.com/user-attachments/assets/9dbc92ae-c19d-4fc5-9485-14fc1783d098)
+
+![280911645-514f9768-8258-4cd0-bfad-0bec1b5d33b5](https://github.com/Senthamil1412/Ex.-No.8-CONFIGURING-ANALOG-PORT-TO-INTEFACE-AN-ANALOG-SENSOR-AND-READ-THE-VALUES-USING-SERIAL-PORT/assets/119120228/c35cab76-03d8-4204-a8b2-4e6e2a080f87)
 
 
 
 
 
 ## Result :
-Interfacing a push button and interrupt genrateion is simulated using proteus
 
-
+Hence,the configuring analog port to inteface an analog sensor and read the values using serial port runned successfully.
